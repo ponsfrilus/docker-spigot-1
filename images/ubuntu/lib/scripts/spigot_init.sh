@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+echo "SPIGOT_HOME=$SPIGOT_HOME/"
+
 # Change owner to minecraft.
 if [ "$SKIPCHMOD" != "true" ]; then
   sudo chown -R minecraft:minecraft $SPIGOT_HOME/
@@ -57,11 +59,20 @@ fi
 # Select the spigot.jar for this particular rev.
 rm -f $SPIGOT_HOME/spigot.jar && ln -s $SPIGOT_HOME/spigot-$REV.jar $SPIGOT_HOME/spigot.jar
 
+# Avoid to be blacklisted by bukkit's cloudflare. Only redownload if asked.
+if [ -z "$FORECEREBUILDBUKKIT" ]; then
+    REBUILD_BUKKIT=false
+fi
+
 # Install WorldBorder.
 if [ -n "$WORLDBORDER" ]; then
   if [ "$WORLDBORDER" = "true" ]; then
-    echo "Downloading WorldBorder..."
-    wget -O $SPIGOT_HOME/plugins/WorldBorder.jar https://dev.bukkit.org/projects/worldborder/files/latest
+    if [ ! -f $SPIGOT_HOME/plugins/WorldBorder.jar ] || [ "$REBUILD_BUKKIT" = "true" ]; then
+      echo "Downloading WorldBorder..."
+      wget -O $SPIGOT_HOME/plugins/WorldBorder.jar https://dev.bukkit.org/projects/worldborder/files/latest
+    else
+      echo "Using preiviously downloaded WorldBorder..."
+    fi
   else
     echo "Removing WorldBorder..."
     rm -f $SPIGOT_HOME/plugins/WorldBorder.jar
@@ -119,8 +130,12 @@ fi
 # Install Clearlag.
 if [ -n "$CLEARLAG" ]; then
   if [ "$CLEARLAG" = "true" ]; then
-    echo "Downloading ClearLag..."
-    wget -O $SPIGOT_HOME/plugins/Clearlag.jar https://dev.bukkit.org/projects/clearlagg/files/latest
+    if [ ! -f $SPIGOT_HOME/plugins/Clearlag.jar ] || [ "$REBUILD_BUKKIT" = "true" ]; then
+      echo "Downloading ClearLag..."
+      wget -O $SPIGOT_HOME/plugins/Clearlag.jar https://dev.bukkit.org/projects/clearlagg/files/latest
+    else
+      echo "Using preiviously downloaded ClearLag..."
+    fi
   else
     echo "Removing Clearlag..."
     rm -f $SPIGOT_HOME/plugins/Clearlag.jar
@@ -130,8 +145,12 @@ fi
 # Install PermissionsEx.
 if [ -n "$PERMISSIONSEX" ]; then
   if [ "$PERMISSIONSEX" = "true" ]; then
-    echo "Downloading PermissionsEx..."
-    wget -O $SPIGOT_HOME/plugins/PermissionsEx.jar https://dev.bukkit.org/projects/permissionsex/files/latest
+    if [ ! -f $SPIGOT_HOME/plugins/PermissionsEx.jar ] || [ "$REBUILD_BUKKIT" = "true" ]; then 
+      echo "Downloading PermissionsEx..."
+      wget -O $SPIGOT_HOME/plugins/PermissionsEx.jar https://dev.bukkit.org/projects/permissionsex/files/latest
+    else
+      echo "Using preiviously downloaded PremissionsEx..."
+    fi
   else
     echo "Removing PermissionsEx..."
     rm -f $SPIGOT_HOME/plugins/PermissionsEx.jar
