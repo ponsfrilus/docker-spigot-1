@@ -4,10 +4,16 @@ MAINTAINER AshDev <ashdevfr@gmail.com>
 ENV DEBIAN_FRONTEND noninteractive
 
 RUN apt-get update -y; apt-get upgrade -y
-RUN apt-get install -y software-properties-common
+RUN apt-get install -y software-properties-common apt-utils
 RUN add-apt-repository ppa:webupd8team/java -y
-RUN apt-get install -y curl openjdk-8-jdk supervisor pwgen
-RUN apt-get update && apt-get install -y wget git && apt-get clean all
+RUN apt-get install -y curl \
+                       openjdk-8-jdk \
+                       supervisor \
+                       pwgen \
+                       sudo \
+                       wget \
+                       git
+RUN apt-get clean all
 
 ENV APP_NAME=server
 #default directory for SPIGOT-server
